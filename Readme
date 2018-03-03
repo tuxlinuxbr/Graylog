@@ -1,0 +1,23 @@
+== Ufdb-Block Content Pack ==
+For configuration, you need add this values on /etc/rsyslog.d/ufdb-block.conf file:
+
+# Load Modules
+module(load="imfile")
+module(load="omfwd")
+# rsyslog Input Modules
+input(type="imfile"
+         File="/var/log/ufdbguard/ufdbguardd.log"
+         Tag="ufdb-block"
+         Severity="info"
+         Facility="local7"
+         ruleset="UfdbForward")
+
+# rsyslog RuleSets
+ruleset(name="UfdbForward") {
+        if $msg contains 'BLOCK' then
+                action(type="omfwd"
+                Target="GRAYLOG_NAME_SERVER"
+                Port="19202"
+                Protocol="tcp"
+                template="RSYSLOG_SyslogProtocol23Format")
+}
